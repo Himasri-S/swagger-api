@@ -1,45 +1,19 @@
-# Python package
-# Create and test a Python package on multiple Python versions.
-# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
-
 trigger:
 - main
-
+ 
 pool: Default
-
-strategy:
-  matrix:
-    Python27:
-      python.version: '2.7'
-    Python35:
-      python.version: '3.5'
-    Python36:
-      python.version: '3.6'
-    Python37:
-      python.version: '3.7'
-
+ 
 steps:
 - script: |
-    if [ "$(python3.6 --version)" != "Python 3.6.15" ]; then
-      echo "Installing Python 3.6"
-      sudo apt-get update
-      sudo apt-get install -y python3.6
-    fi
-  displayName: 'Install Python 3.6'
-
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.6'
-    addToPath: true
-  displayName: 'Use Python 3.6'
-
+    python3 --version
+  displayName: 'Show Python version'
+ 
 - script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
+    python3 -m pip install --upgrade pip
+    python3 -m pip install -r requirements.txt
   displayName: 'Install dependencies'
-
+ 
 - script: |
-    pip install pytest pytest-azurepipelines
-    pytest
-  displayName: 'pytest'
+    /home/ubuntu/.local/bin/pytest
+  displayName: 'Run tests'
+ 
