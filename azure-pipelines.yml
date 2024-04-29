@@ -1,0 +1,41 @@
+trigger:
+- main
+
+pool:
+  name: Default
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildJob
+    steps:
+    - script: |
+        python3 --version
+      displayName: 'Show Python version'
+
+    - script: |
+        python3 -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: 'Install dependencies'
+
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(build.artifactstagingdirectory)/task-api.zip'
+      displayName: 'Archive files'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(build.artifactstagingdirectory)'
+        artifactName: 'task-api'
+        publishLocation: 'Container'
+
+- stage: Test
+  jobs:
+  - job: TestJob
+    steps:
+    - script: |
+        pytest
+      displayName: 'Run tests'
